@@ -93,6 +93,9 @@
     }
 
     function drawStepProgress(currentMilestone, button) {
+  const pedidoId = button.closest('tr').children[0].innerText;
+  const itemId = button.closest('tr').children[1].innerText;
+  document.getElementById('pedidoId').innerText = `#${pedidoId} - Item ${itemId}`;
       const container = document.getElementById("stepProgressContainer");
       const progress = document.getElementById("stepProgress");
       container.style.display = "block";
@@ -112,30 +115,31 @@
       const milestones = translations[lang].steps;
 
       progress.innerHTML = milestones.map((step, index) => {
-        const isActive = milestones.indexOf(currentMilestone) >= index;
-        const dateLabel = `2025-05-${String(6 + index).padStart(2, '0')}`;
-        return `<div class=\"flex flex-col items-center mx-4\">
-          <div class=\"flex items-center justify-center w-8 h-8 ${isActive ? 'bg-blue-600 animate-pulse' : 'bg-gray-300'} text-white rounded-full\">
-            ${isActive ? '<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>' : index + 1}
-          </div>
-          <div class=\"text-sm mt-1 ${isActive ? 'font-bold text-blue-700' : 'text-gray-500'}\">${step}</div>
-          <div class=\"text-xs text-gray-400\">${dateLabel}</div>
-        </div>`;
-      }).join('<div class=\"flex-grow border-t-2 border-gray-300\"></div>');
+  const isActive = milestones.indexOf(currentMilestone) >= index;
+  const dateLabel = `2025-05-${String(6 + index).padStart(2, '0')}`;
+  return `<div class="flex flex-col items-center mx-2">
+    <div class="flex items-center justify-center w-6 h-6 ${isActive ? 'bg-blue-600 animate-pulse' : 'bg-gray-300'} text-white rounded-full text-xs">${isActive ? '<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-4 w-4\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>' : index + 1}</div>
+    <div class="text-xs mt-1 ${isActive ? 'font-semibold text-blue-700' : 'text-gray-500'}">${step}</div>
+    <div class="text-[10px] text-gray-400">${dateLabel}</div>
+  </div>`;
+}).join('<div class="h-0.5 w-4 bg-gray-300"></div>');
     }
 
     window.onload = () => {
-      const cliente = localStorage.getItem("cliente");
-      if (cliente) {
-        mostrarDashboard(cliente);
-      }
-      setLanguage('pt');
-    };
+  const cliente = localStorage.getItem("cliente");
+  if (cliente) {
+    mostrarDashboard(cliente);
+  }
+  setLanguage('pt');
+};
   </script>
 </head>
 <body class="bg-gray-100 font-sans">
-  <div class="absolute top-4 left-4">
-    <select onchange="setLanguage(this.value)" class="border border-gray-300 rounded px-3 py-1">
+  <div class="absolute top-2 left-2">
+  <img src="./logoSOmek.png" alt="Logo Somek" class="w-32 h-auto">
+</div>
+  <div class="absolute top-4 left-44">
+  <select onchange="setLanguage(this.value)" class="border border-gray-300 rounded px-3 py-1">
       <option value="pt">Português</option>
       <option value="en">English</option>
     </select>
@@ -159,116 +163,96 @@
     </div>
 
     <div class="overflow-x-auto">
-      <table class="min-w-full bg-white shadow-md rounded-lg">
-        <thead>
-          <tr class="bg-blue-700 text-white text-left">
-            <th id="thPedido" class="py-3 px-6">Pedido</th>
-            <th id="thItem" class="py-3 px-6">Item</th>
-            <th id="thCliente" class="py-3 px-6">Cliente</th>
-            <th id="thPeca" class="py-3 px-6">Peça</th>
-            <th id="thMilestone" class="py-3 px-6">Milestone Atual</th>
-            <th id="thData" class="py-3 px-6">Data Prevista</th>
-            <th class="py-3 px-6">Status</th>
-          </tr>
+      <table class="min-w-full bg-white shadow-md rounded-lg text-xs">
+        <thead class="bg-gray-100 sticky top-0 z-10">
+  <tr class="text-left">
+  <th id="thPedido" class="py-3 px-4">Pedido</th>
+  <th id="thItem" class="py-3 px-4">Item</th>
+  <th id="thCliente" class="py-3 px-4">Cliente</th>
+  <th class="py-3 px-4">Código</th>
+  <th id="thMilestone" class="py-3 px-4">Milestone Atual</th>
+  <th class="py-3 px-4">Data Solicitada Cliente</th>
+<th id="thData" class="py-3 px-4">Data Prevista</th>
+
+  <th class=\"py-3 px-4\">Qtd</th>
+<th class=\"py-3 px-4\">Status</th>
+</tr>
         </thead>
-        <tbody>
-          <tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20001</td>
-  <td class="py-3 px-6">A-01</td>
+        <tbody id="tabelaPedidos">
+<tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
+  <td class="py-3 px-6">4531860872</td>
+  <td class="py-3 px-6">10</td>
   <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Caixa Técnica A</td>
+  <td class="py-3 px-6">SXK1256336/19</td>
   <td class="py-3 px-6">Pedido Recebido</td>
-  <td class="py-3 px-6">06/05/2025</td>
-  <td class="py-3 px-6"><button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Pedido Recebido', this)">Ver status</button></td>
-</tr>
-<tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20002</td>
-  <td class="py-3 px-6">A-02</td>
-  <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Suporte Estrutural B</td>
-  <td class="py-3 px-6">Desenho Técnico Aprovado</td>
-  <td class="py-3 px-6">07/05/2025</td>
-  <td class="py-3 px-6"><button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Desenho Técnico Aprovado', this)">Ver status</button></td>
-</tr>
-<tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20003</td>
-  <td class="py-3 px-6">A-03</td>
-  <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Gabinete Metálico C</td>
-  <td class="py-3 px-6">Matéria-prima Separada</td>
-  <td class="py-3 px-6">08/05/2025</td>
-  <td class="py-3 px-6"><button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Matéria-prima Separada', this)">Ver status</button></td>
-</tr>
-<tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20004</td>
-  <td class="py-3 px-6">A-04</td>
-  <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Módulo D</td>
-  <td class="py-3 px-6">Corte Realizado</td>
   <td class="py-3 px-6">09/05/2025</td>
-  <td class="py-3 px-6"><button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Corte Realizado', this)">Ver status</button></td>
+  <td class="py-3 px-6">10/05/25</td>
+  <td class="py-3 px-6">1</td>
+  <td class="py-3 px-6">
+    <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Pedido Recebido', this)">Ver status</button>
+  </td>
 </tr>
 <tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20005</td>
-  <td class="py-3 px-6">A-05</td>
+  <td class="py-3 px-6">4531860872</td>
+  <td class="py-3 px-6">20</td>
   <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Painel E</td>
-  <td class="py-3 px-6">Solda / Montagem</td>
+  <td class="py-3 px-6">SXK1256336/58</td>
+  <td class="py-3 px-6">Desenho Técnico Aprovado</td>
   <td class="py-3 px-6">10/05/2025</td>
-  <td class="py-3 px-6"><button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Solda / Montagem', this)">Ver status</button></td>
+  <td class="py-3 px-6">11/05/25</td>
+  <td class="py-3 px-6">2</td>
+  <td class="py-3 px-6">
+    <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Desenho Técnico Aprovado', this)">Ver status</button>
+  </td>
 </tr>
 <tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20006</td>
-  <td class="py-3 px-6">A-06</td>
+  <td class="py-3 px-6">4531860872</td>
+  <td class="py-3 px-6">30</td>
   <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Tampa F</td>
-  <td class="py-3 px-6">Pintura / Expedição</td>
+  <td class="py-3 px-6">SXK1256336/81</td>
+  <td class="py-3 px-6">Matéria-prima Separada</td>
   <td class="py-3 px-6">11/05/2025</td>
-  <td class="py-3 px-6"><button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Pintura / Expedição', this)">Ver status</button></td>
+  <td class="py-3 px-6">12/05/25</td>
+  <td class="py-3 px-6">3</td>
+  <td class="py-3 px-6">
+    <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Matéria-prima Separada', this)">Ver status</button>
+  </td>
 </tr>
 <tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20007</td>
-  <td class="py-3 px-6">A-07</td>
+  <td class="py-3 px-6">4531860872</td>
+  <td class="py-3 px-6">40</td>
   <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Estrutura G</td>
+  <td class="py-3 px-6">SXK1256336/87</td>
   <td class="py-3 px-6">Corte Realizado</td>
   <td class="py-3 px-6">12/05/2025</td>
-  <td class="py-3 px-6"><button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Corte Realizado', this)">Ver status</button></td>
+  <td class="py-3 px-6">13/05/25</td>
+  <td class="py-3 px-6">1</td>
+  <td class="py-3 px-6">
+    <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Corte Realizado', this)">Ver status</button>
+  </td>
 </tr>
 <tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20008</td>
-  <td class="py-3 px-6">A-08</td>
+  <td class="py-3 px-6">4531860875</td>
+  <td class="py-3 px-6">10</td>
   <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Base H</td>
-  <td class="py-3 px-6">Matéria-prima Separada</td>
-  <td class="py-3 px-6">13/05/2025</td>
-  <td class="py-3 px-6"><button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Matéria-prima Separada', this)">Ver status</button></td>
-</tr>
-<tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20009</td>
-  <td class="py-3 px-6">A-09</td>
-  <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Gabinete I</td>
-  <td class="py-3 px-6">Pedido Recebido</td>
-  <td class="py-3 px-6">14/05/2025</td>
-  <td class="py-3 px-6"><button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Pedido Recebido', this)">Ver status</button></td>
-</tr>
-<tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20010</td>
-  <td class="py-3 px-6">A-10</td>
-  <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Módulo J</td>
+  <td class="py-3 px-6">SXA2163862</td>
   <td class="py-3 px-6">Solda / Montagem</td>
-  <td class="py-3 px-6">15/05/2025</td>
-  <td class="py-3 px-6"><button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Solda / Montagem', this)">Ver status</button></td>
+  <td class="py-3 px-6">13/05/2025</td>
+  <td class="py-3 px-6">14/05/25</td>
+  <td class="py-3 px-6">49</td>
+  <td class="py-3 px-6">
+    <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Solda / Montagem', this)">Ver status</button>
+  </td>
 </tr>
-        <tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
-  <td class="py-3 px-6">20011</td>
-  <td class="py-3 px-6">A-11</td>
+<tr data-cliente="Ericsson" class="border-b hover:bg-gray-100">
+  <td class="py-3 px-6">4531860875</td>
+  <td class="py-3 px-6">20</td>
   <td class="py-3 px-6">Ericsson</td>
-  <td class="py-3 px-6">Conjunto Finalizado</td>
+  <td class="py-3 px-6">SXK1254240</td>
   <td class="py-3 px-6">Entrega Completa</td>
-  <td class="py-3 px-6">16/05/2025</td>
+  <td class="py-3 px-6">14/05/2025</td>
+  <td class="py-3 px-6">15/05/25</td>
+  <td class="py-3 px-6">1</td>
   <td class="py-3 px-6">
     <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" onclick="drawStepProgress('Entrega Completa', this)">Ver status</button>
   </td>
@@ -279,7 +263,7 @@
   </div>
 
   <div class="max-w-6xl mx-auto p-6 hidden" id="stepProgressContainer">
-    <h2 id="statusTitle" class="text-2xl font-bold mb-4">Status do Pedido</h2>
+    <h2 id="statusTitle" class="text-2xl font-bold mb-4">Status do Pedido <span id="pedidoId" class="text-gray-600 text-base font-normal"></span></h2>
     <div id="stepProgress" class="flex items-center overflow-x-auto space-x-4"></div>
   </div>
 </body>
